@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pylint = "*"
+check-manifest = "*"
+
+[dev-packages]
+bandit = "*"
+black = "*"
+pre-commit = "*"
+pylint = "*"
+pytest = "*"
+tox = "*"
+atlas_ci = {path = ".", editable = true}
+
+[requires]
+# Empty because pipenv will not support multiple python version here.
+# see https://github.com/pypa/pipenv/issues/1050
+
+[pipenv]
+allow_prereleases = true
