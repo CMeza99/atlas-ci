@@ -47,7 +47,9 @@ def _config_logging(
         _LOGGER.addHandler(filehandler)
 
 
-def get_hcl_files(path: Optional[str] = None) -> List[Union[Union[bytes, str], Any]]:
+def get_hcl_files(
+    path: Optional[str] = None, last_hcl: Optional[str] = None
+) -> List[Union[Union[bytes, str], Any]]:
     """
     Get sorted list of hcl files from a directory.
 
@@ -69,6 +71,18 @@ def get_hcl_files(path: Optional[str] = None) -> List[Union[Union[bytes, str], A
     hcl_files: List[Union[Union[bytes, str], Any]] = glob.glob(
         os.path.join(path, "*.hcl")
     )
+
+    hcl_files.sort()
+
+    if last_hcl:
+        hcl_files_tmp: List = list()
+        for hcl_file in hcl_files:
+            hcl_files_tmp.append(hcl_file)
+            if last_hcl in hcl_file:
+                _LOGGER.debug(
+                    "Not including hcl files after and including %s", last_hcl
+                )
+                break
 
     return sorted(hcl_files)
 
