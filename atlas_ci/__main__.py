@@ -30,7 +30,8 @@ def _config_logging(
         Name of log file. By default there is not fileHandler for logging
     """
 
-    # root Logger lvl must be the lowest for child handlers to use an lvl equal to or greater than that of the parent
+    # root Logger lvl must be the lowest for child handlers to use an
+    # lvl equal to or greater than that of the parent
     # see https://docs.python.org/3/library/logging.html#logging.Logger.setLevel
     _logger.setLevel(logging.DEBUG)
 
