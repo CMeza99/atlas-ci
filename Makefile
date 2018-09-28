@@ -53,7 +53,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr .pytest_cache
 
 lint: ## check style with flake8
-	pipenv run pylint atlas_ci
+	pipenv run pylint atlas_ci tests setup.py
 	black --check atlas_ci tests
 
 test: ## run tests quickly with the default Python
@@ -63,10 +63,10 @@ test-all: ## run tests on every Python version with tox
 	pipenv run tox
 
 coverage: ## check code coverage quickly with the default Python
-	coverage run --source atlas_ci -m pytest
-	coverage report -m
-	coverage html
-	$(BROWSER) htmlcov/index.html
+	pipenv run coverage run --source atlas_ci -m pytest
+	pipenv run coverage report -m
+	pipenv run coverage html
+	pipenv run $(BROWSER) htmlcov/index.html
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/atlas_ci.rst
