@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 
 """Main module."""
-from typing import List, Optional, Any, Union
+
+from typing import Optional
 import logging
-import glob
+import logging.handlers
 import os
 import sys
 
-_LOGGER = logging.getLogger(__package__)
+
+_logger: logging.Logger = logging.getLogger(__name__)
 
 
 def _config_logging(
@@ -28,63 +30,34 @@ def _config_logging(
         Name of log file. By default there is not fileHandler for logging
     """
 
-    if console_loglevel is None:
-        console_loglevel = logging.WARNING
-    log_format: str = "%(levelname)s: %(message)s"
+    # root Logger lvl must be the lowest for child handlers to use an lvl equal to or greater than that of the parent
+    # see https://docs.python.org/3/library/logging.html#logging.Logger.setLevel
+    _logger.setLevel(logging.DEBUG)
 
-    logging.basicConfig(stream=sys.stderr, level=console_loglevel, format=log_format)
+    if console_loglevel is None:
+        console_loglevel = logging.INFO
+
+    log_formatter: logging.Formatter = logging.Formatter("%(levelname)s: %(message)s")
+    console_handler: logging.StreamHandler = logging.StreamHandler(sys.stderr)
+    console_handler.setFormatter(log_formatter)
+    console_handler.setLevel(console_loglevel)
+    _logger.addHandler(console_handler)
 
     if log_file:
-        log_formatter: logging.Formatter = logging.Formatter(
+        if not file_loglevel:
+            file_loglevel = logging.DEBUG
+        log_formatter = logging.Formatter(
             "[%(asctime)s:%(levelname)-7s:%(name)s.%(module)s:%(lineno)d] %(message)s"
         )
-        filehandler: logging.FileHandler = logging.FileHandler(log_file)
-        if not file_loglevel:
-            filehandler.setLevel(logging.DEBUG)
+        if os.name == "posix":
+            file_handler: logging.handlers.WatchedFileHandler = logging.handlers.WatchedFileHandler(
+                log_file
+            )
         else:
-            filehandler.setLevel(file_loglevel)
-        filehandler.setFormatter(log_formatter)
-        _LOGGER.addHandler(filehandler)
-
-
-def get_hcl_files(
-    path: Optional[str] = None, last_hcl: Optional[str] = None
-) -> List[Union[Union[bytes, str], Any]]:
-    """
-    Get sorted list of hcl files from a directory.
-
-    Parameters
-    ----------
-    path : str, optional
-        Path to look for hcl files. Will use current working directory if no value is supplied.
-
-    Returns
-    -------
-    list
-        Sorted list of hcl files.
-    """
-
-    if not path:
-        path = os.getcwd()
-
-    _LOGGER.debug("Looking for HCL files in %s", os.path.abspath(path))
-    hcl_files: List[Union[Union[bytes, str], Any]] = glob.glob(
-        os.path.join(path, "*.hcl")
-    )
-
-    hcl_files.sort()
-
-    if last_hcl:
-        hcl_files_tmp: List = list()
-        for hcl_file in hcl_files:
-            hcl_files_tmp.append(hcl_file)
-            if last_hcl in hcl_file:
-                _LOGGER.debug(
-                    "Not including hcl files after and including %s", last_hcl
-                )
-                break
-
-    return sorted(hcl_files)
+            file_handler: logging.FileHandler = logging.FileHandler(log_file)
+        file_handler.setFormatter(log_formatter)
+        file_handler.setLevel(file_loglevel)
+        _logger.addHandler(file_handler)
 
 
 def main():
