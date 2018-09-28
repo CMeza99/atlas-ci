@@ -4,12 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pylint = "*"
-check-manifest = "*"
 
 [dev-packages]
 bandit = "*"
 black = "*"
+coverage = "*"
 pre-commit = "*"
 pylint = "*"
 pytest = "*"
