@@ -1,14 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# pylint: disable=no-self-use, line-too-long
 
 """Tests for `atlas_ci` package."""
 
 import unittest
-import atlas_ci.__main__
+from typing import List
+
+import atlas_ci
 
 
 class TestAtlasCi(unittest.TestCase):
     """Tests for `atlas_ci` package."""
+
+    data_path: str = "./tests/data"
 
     def setUp(self):
         """Set up test fixtures, if any."""
@@ -19,15 +24,35 @@ class TestAtlasCi(unittest.TestCase):
     def test_000_get_hcl_files(self):
         """Test atlas_ci.get_hcl_files()."""
 
-        assert len(atlas_ci.__main__.get_hcl_files(".")) == 0
+        assert (
+            len(atlas_ci.ci.get_hcl_files(".")) == 0  # pylint: disable=len-as-condition
+        )
 
     def test_001_get_hcl_files(self):
-        """Test atlas_ci.get_hcl_files('/InvalidPath')."""
+        """Test atlas_ci.get_hcl_files."""
 
-        atlas_ci.__main__.get_hcl_files("/InvalidPath")
-        # FileNotFoundError: [Errno 2] No such file or directory: '/InvalidPath'
+        hcl_files: List[str] = [
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/0-system.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/01-shared-buckets.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/1-shared-stack.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/1.1.1-shared-stack-extra.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/2-test-stack.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/2.2.1-test-stack-component2.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/2.2.2-test-stack-component2.hcl",
+        ]
+
+        assert atlas_ci.ci.get_hcl_files(self.data_path) == hcl_files
 
     def test_002_get_hcl_files(self):
-        """Test atlas_ci.get_hcl_files('./data')."""
+        """Test atlas_ci.get_hcl_files w/ last_hcl."""
 
-        atlas_ci.__main__.get_hcl_files("./data")
+        hcl_files: List[str] = [
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/0-system.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/01-shared-buckets.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/1-shared-stack.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/1.1.1-shared-stack-extra.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/2-test-stack.hcl",
+            "/home/digitalr00ts/Documents/git/cookie.experiments/atlas-ci/tests/data/2.2.1-test-stack-component2.hcl",
+        ]
+
+        assert atlas_ci.ci.get_hcl_files(self.data_path, "2.2.1") == hcl_files
